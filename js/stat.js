@@ -14,6 +14,7 @@ window.renderStatistics = function (ctx, names, times) {
   var initialX = BEGIN_CLOUD_X + (WIDTH_CLOUD - barWidth * names.length - stepWidth * (names.length - 1)) / 2;
   var initialY = 240;
 
+  // Отрисовка облака
   var drawCloud = function () {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
     ctx.fillRect(BEGIN_CLOUD_X + SHIFT_SHADOW_XY, BEGIN_CLOUD_Y + SHIFT_SHADOW_XY, WIDTH_CLOUD, HEIGHT_CLOUD);
@@ -22,6 +23,7 @@ window.renderStatistics = function (ctx, names, times) {
     ctx.fillRect(BEGIN_CLOUD_X, BEGIN_CLOUD_Y, WIDTH_CLOUD, HEIGHT_CLOUD);
   };
 
+  // Титульная подпись
   var writeTitle = function () {
     ctx.fillStyle = '#000';
     ctx.font = '16px PT Mono';
@@ -30,27 +32,32 @@ window.renderStatistics = function (ctx, names, times) {
     ctx.fillText('Список результатов:', initialX, 40);
   };
 
+  // Выбор максимального времени
+  for (var i = 0; i < times.length; i++) {
+    var time = times[i];
+
+    if (time > max) {
+      max = time;
+    }
+  }
+  // Задача шага для равномерного заполнения гистограммы
+  var step = histogramHeight / max;
+
   var drawColumn = function (namesUsers, timesUsers) {
-    for (var i = 0; i < times.length; i++) {
-      var time = times[i];
-
-      if (time > max) {
-        max = time;
-      }
-
-      var step = histogramHeight / max;
-
+    for (i = 0; i < times.length; i++) {
+      // Задача цвета колонкам
       if (namesUsers[i] === 'Вы') {
         ctx.fillStyle = 'rgba(255, 0, 0, 1)';
       } else {
-        var transparency = Math.random() * 0.8 + 0.2;
+        var transparency = Math.random() * 0.7 + 0.3;
         ctx.fillStyle = 'rgba(0, 0, 255,' + transparency + ')';
       }
-
+      // Рисуем колонки
       ctx.fillRect(initialX + (barWidth + stepWidth) * i, initialY, barWidth, -1 * timesUsers[i] * step);
-
+      // Подписываем имена
       ctx.fillStyle = '#000';
       ctx.fillText(namesUsers[i], initialX + (barWidth + stepWidth) * i, initialY + 10);
+      // Подписываем округленные результаты времени
       ctx.fillText(Math.floor(timesUsers[i]), initialX + (barWidth + stepWidth) * i, initialY - timesUsers[i] * step - 20);
     }
   };
